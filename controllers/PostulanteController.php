@@ -17,8 +17,14 @@ class PostulanteController {
 
         if ($metodo === 'POST') {
             $this->postular($datos);
-        } elseif ($metodo === 'GET' && isset($_GET['id'])) {
-            $this->verEstado($_GET['id']);
+        } elseif ($metodo === 'GET') {
+            if (isset($_GET['id'])) {
+                $this->verEstado($_GET['id']);
+            } elseif (isset($_GET['oferta_id'])) {
+                $this->listarPorOferta($_GET['oferta_id']);
+            } else {
+                $this->listarTodos();
+            }
         } elseif ($metodo === 'PATCH') {
             $this->cambiarEstado($datos);
         } else {
@@ -32,7 +38,7 @@ class PostulanteController {
             echo json_encode(["error" => "Faltan datos para postular"]);
             return;
         }
-    
+
         $id = $this->model->postular($datos['oferta_id'], $datos['nombre_candidato'], $datos['correo']);
         echo json_encode(["message" => "Postulación registrada", "id" => $id]);
     }
@@ -54,5 +60,15 @@ class PostulanteController {
         }
         $this->model->cambiarEstado($datos['id'], $datos['estado'], $datos['comentario'] ?? '');
         echo json_encode(["message" => "Estado actualizado"]);
+    }
+
+    private function listarTodos() {
+        $postulantes = $this->model->obtenerTodos();
+        echo json_encode($postulantes);
+    }
+
+    private function listarPorOferta($oferta_id) {
+        $postulantes = $this->model->obtenerPorOferta($oferta_id);
+        echo json_encode($postulantes);
     }
 }

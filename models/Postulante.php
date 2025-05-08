@@ -28,4 +28,18 @@ class Postulante {
         $stmt = $this->db->prepare($sql);
         return $stmt->execute([$estado, $comentario, $id]);
     }
+
+    public function obtenerTodos() {
+        $sql = "SELECT * FROM postulaciones";
+        $stmt = $this->db->query($sql);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
+    public function obtenerPorOferta($oferta_id) {
+        $sql = "SELECT * FROM postulaciones WHERE oferta_id = ?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$oferta_id]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
 }
